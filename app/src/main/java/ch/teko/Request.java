@@ -25,7 +25,23 @@ public class Request {
             Gson gson = new Gson();
             List<Address> data = Arrays.asList(gson.fromJson(reader, Address[].class));
 
-            int value = 5;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void doTransactionCall(String transactionId) {
+        try {
+            URL url = new URL(transactionUrl + transactionId + "/coins");
+            URLConnection request = url.openConnection();
+            request.connect();
+    
+            //InputStream input = url.openStream();
+            InputStreamReader reader = new InputStreamReader((InputStream)request.getContent());
+
+            Gson gson = new Gson();
+            Transaction data = gson.fromJson(reader, Transaction.class);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
