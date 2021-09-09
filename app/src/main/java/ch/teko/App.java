@@ -3,12 +3,55 @@
  */
 package ch.teko;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class App extends Application{
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Bitcoin Tracker");
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(15, 12, 15, 12));
+        HBox hBox = new HBox();
+        hBox.setPadding(new Insets(15, 0, 15, 0));
+        hBox.setSpacing(10);
+        Label label = new Label("Wallet Adresse:");
+        TextField addressField = new TextField();
+        addressField.setPrefWidth(500);
+        Button runButton = new Button("Los!");
+        hBox.getChildren().addAll(label, addressField, runButton);
+        TextArea resultsArea = new TextArea();
+        resultsArea.setEditable(false);
+        resultsArea.setPrefHeight(1000);
+        vBox.getChildren().addAll(hBox, resultsArea);
+
+        Scene scene = new Scene(vBox, 900, 500);
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+         //Button Click Handler
+         runButton.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event){
+                Request request = new Request();
+                request.doAddressCall(addressField.getText());
+            }
+        });
     }
 }
