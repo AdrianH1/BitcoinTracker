@@ -14,4 +14,16 @@ public class Address {
     private long value;
     private int confirmations;
     //private long sequenceNumber;
+
+    public String getSpentTxid(){
+        return spentTxid;
+    }
+
+    public long getValue(){
+        return value;
+    }
+
+    public String getAddress(){
+        return address;
+    }
 }

@@ -13,7 +13,7 @@ public class Request {
     private String addressUrl = "https://api.bitcore.io/api/BTC/mainnet/address/";
     private String transactionUrl = "https://api.bitcore.io/api/BTC/mainnet/tx/";
     
-    public void doAddressCall(String address) {
+    public List<Address> doAddressCall(String address) {
         try {
             URL url = new URL(addressUrl + address);
             URLConnection request = url.openConnection();
@@ -24,6 +24,7 @@ public class Request {
 
             Gson gson = new Gson();
             List<Address> data = Arrays.asList(gson.fromJson(reader, Address[].class));
+            return data;
 
         } catch (Exception e) {
             if (e.getMessage().contains("429")){
@@ -31,9 +32,10 @@ public class Request {
             }
             System.out.println(e.getMessage());
         }
+        return null;
     }
 
-    public void doTransactionDetailCall(String transactionId) {
+    public TransactionDetail doTransactionDetailCall(String transactionId) {
         try {
             URL url = new URL(transactionUrl + transactionId + "/coins");
             URLConnection request = url.openConnection();
@@ -44,6 +46,7 @@ public class Request {
 
             Gson gson = new Gson();
             TransactionDetail data = gson.fromJson(reader, TransactionDetail.class);
+            return data;
 
         } catch (Exception e) {
             if (e.getMessage().contains("429")){
@@ -51,9 +54,10 @@ public class Request {
             }
             System.out.println(e.getMessage());
         }
+        return null;
     }
 
-    public void doTransactionOverviewCall(String transactionId) {
+    public TransactionOverview doTransactionOverviewCall(String transactionId) {
         try {
             URL url = new URL(transactionUrl + transactionId );
             URLConnection request = url.openConnection();
@@ -63,7 +67,8 @@ public class Request {
             InputStreamReader reader = new InputStreamReader((InputStream)request.getContent());
 
             Gson gson = new Gson();
-            TransactionDetail data = gson.fromJson(reader, TransactionDetail.class);
+            TransactionOverview data = gson.fromJson(reader, TransactionOverview.class);
+            return data;
 
         } catch (Exception e) {
             if (e.getMessage().contains("429")){
@@ -71,5 +76,6 @@ public class Request {
             }
             System.out.println(e.getMessage());
         }
+        return null;
     }
 }
