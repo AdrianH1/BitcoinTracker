@@ -26,11 +26,14 @@ public class Request {
             List<Address> data = Arrays.asList(gson.fromJson(reader, Address[].class));
 
         } catch (Exception e) {
+            if (e.getMessage().contains("429")){
+                doTransactionDetailCall(address);
+            }
             System.out.println(e.getMessage());
         }
     }
 
-    public void doTransactionCall(String transactionId) {
+    public void doTransactionDetailCall(String transactionId) {
         try {
             URL url = new URL(transactionUrl + transactionId + "/coins");
             URLConnection request = url.openConnection();
@@ -40,9 +43,32 @@ public class Request {
             InputStreamReader reader = new InputStreamReader((InputStream)request.getContent());
 
             Gson gson = new Gson();
-            Transaction data = gson.fromJson(reader, Transaction.class);
+            TransactionDetail data = gson.fromJson(reader, TransactionDetail.class);
 
         } catch (Exception e) {
+            if (e.getMessage().contains("429")){
+                doTransactionDetailCall(transactionId);
+            }
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void doTransactionOverviewCall(String transactionId) {
+        try {
+            URL url = new URL(transactionUrl + transactionId );
+            URLConnection request = url.openConnection();
+            request.connect();
+    
+            //InputStream input = url.openStream();
+            InputStreamReader reader = new InputStreamReader((InputStream)request.getContent());
+
+            Gson gson = new Gson();
+            TransactionDetail data = gson.fromJson(reader, TransactionDetail.class);
+
+        } catch (Exception e) {
+            if (e.getMessage().contains("429")){
+                doTransactionDetailCall(transactionId);
+            }
             System.out.println(e.getMessage());
         }
     }

@@ -1,6 +1,6 @@
 package ch.teko;
 
-public class Transaction {
+public class TransactionDetail {
     private Address[] inputs; 
     private Address[] outputs; 
 }
