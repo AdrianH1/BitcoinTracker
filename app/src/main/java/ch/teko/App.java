@@ -3,6 +3,8 @@
  */
 package ch.teko;
 
+import java.util.List;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -67,7 +69,11 @@ public class App extends Application{
                 if (checkDepthValidity(depthField.getText())) {
                     errorLabel.setText("");
                     Tracker tracker = new Tracker();
-                    tracker.startTracking(addressField.getText(), Integer.parseInt(depthField.getText()));
+                    List<MarkedAddress> result = tracker.startTracking(addressField.getText(), Integer.parseInt(depthField.getText()));
+                    for (MarkedAddress markedAddress : result) {
+                        resultsArea.appendText("Suchtiefe: " + String.valueOf(markedAddress.getSearchDepth()) + "\n\t" + markedAddress.getMarkedAddress() + "\n");
+                    }
+                    
                 }
                 else {
                     errorLabel.setText("Ung\u00fcltige Suchtiefe!");
