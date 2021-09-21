@@ -32,6 +32,10 @@ public class Tracker {
             depthCounter ++;
         } else {
             if (depthCounter > searchDepth) {
+                transactions = request.doAddressCall(startWallet);
+                // if (condition) {
+                //     getTransactionDetail(transactions, startWallet);
+                // }
                 depthCounter ++;
             }
         }
@@ -40,7 +44,7 @@ public class Tracker {
 
     public void getTransactionDetail(List<Address> transactions, String wallet){
         for (Address transaction : transactions){
-            if (transaction.getSpentTxid() != null){
+            if (transaction.getSpentTxid() != null && !transaction.getSpentTxid().isEmpty()){
                 transactionDetails.add(request.doTransactionDetailCall(transaction.getSpentTxid()));
                 overview = request.doTransactionOverviewCall(transaction.getSpentTxid());
                 transactionDetails.get(transactionDetails.size()-1).setBlockTime(overview.getBlockTime());
@@ -62,23 +66,25 @@ public class Tracker {
                 }
             }
             for (Address output : detail.getOutputs()) {
-                if (valueAfterMarked <= 0 && markedValue > 0) {
-                    addToMarkedTransactions(new MarkedAddress(wallet, depthCounter, output.getAddress()));
-                    markedValue -= output.getValue();
-                    if (markedValue >= detail.getFee()) {
-                        toDoAddresses.add(new ToDoAddress(output.getAddress(), output.getValue(), blockTime));
+                if (!wallet.equals(output.getAddress())) {
+                    if (valueAfterMarked <= 0 && markedValue > 0) {
+                        addToMarkedTransactions(new MarkedAddress(wallet, depthCounter, output.getAddress()));
+                        markedValue -= output.getValue();
+                        if (markedValue >= detail.getFee()) {
+                            toDoAddresses.add(new ToDoAddress(output.getAddress(), output.getValue(), blockTime));
+                        }
+                        else {
+                            toDoAddresses.add(new ToDoAddress(output.getAddress(), output.getValue() - markedValue, blockTime));
+                        }
+                         
                     }
-                    else {
-                        toDoAddresses.add(new ToDoAddress(output.getAddress(), output.getValue() - markedValue, blockTime));
-                    }
-                     
-                }
-                else if (valueAfterMarked - output.getValue() < 0) {
-                    addToMarkedTransactions(new MarkedAddress(wallet, depthCounter, output.getAddress()));
-                    valueAfterMarked -= output.getValue();
-                    toDoAddresses.add(new ToDoAddress(output.getAddress(), Math.abs(valueAfterMarked), blockTime)); 
-                    if (valueAfterMarked < 0) {
-                        markedValue -= valueAfterMarked;
+                    else if (valueAfterMarked - output.getValue() < 0) {
+                        addToMarkedTransactions(new MarkedAddress(wallet, depthCounter, output.getAddress()));
+                        valueAfterMarked -= output.getValue();
+                        toDoAddresses.add(new ToDoAddress(output.getAddress(), Math.abs(valueAfterMarked), blockTime)); 
+                        if (valueAfterMarked < 0) {
+                            markedValue -= valueAfterMarked;
+                        }
                     }
                 }
             }
@@ -86,7 +92,7 @@ public class Tracker {
     }
 
     public void addToMarkedTransactions (MarkedAddress markedAddress) {
-        if (!markedTransactions.stream().anyMatch(m -> m.getMarkedAddress() == markedAddress.getMarkedAddress())) {
+        if (!markedTransactions.stream().anyMatch(m -> m.getMarkedAddress().equals(markedAddress.getMarkedAddress()))) {
             markedTransactions.add(markedAddress);
         }
     }
