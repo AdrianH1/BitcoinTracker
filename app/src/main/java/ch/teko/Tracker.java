@@ -59,24 +59,31 @@ public class Tracker {
                 }
             }
         }
-        nextAddresses.clear();
         return toDoAddresses;
     }
 
     public void getTransactionDetail(List<ToDoAddress> addresses){
         for (ToDoAddress address : addresses) {
-            if (address.getTransactionId() != null && !address.getTransactionId().isEmpty()) {
-                //Get Transaction details from API
-                transactionDetails.add(request.doTransactionDetailCall(address.getTransactionId()));
+            //Get Transaction details from API
+            transactionDetails.add(request.doTransactionDetailCall(address.getTransactionId()));
 
-                //Add Blocktime, Fee and Predecessor Adress to Transaction details list
-                overview = request.doTransactionOverviewCall(address.getTransactionId());
-                transactionDetails.get(transactionDetails.size()-1).setBlockTime(overview.getBlockTime());
-                transactionDetails.get(transactionDetails.size()-1).setFee(overview.getFee());
-                transactionDetails.get(transactionDetails.size()-1).setPredecessor(address.getAddress());
+            //Add Blocktime, Fee and Predecessor Adress to Transaction details list
+            overview = request.doTransactionOverviewCall(address.getTransactionId());
+            transactionDetails.get(transactionDetails.size()-1).setBlockTime(overview.getBlockTime());
+            transactionDetails.get(transactionDetails.size()-1).setFee(overview.getFee());
+            transactionDetails.get(transactionDetails.size()-1).setPredecessor(address.getAddress());
 
+            for (ToDoAddress lastAddress : nextAddresses) {
+                if (lastAddress.getAddress().equals(address.getAddress())) {
+                    if (lastAddress.getBlockTime() != null && lastAddress.getBlockTime().after(transactionDetails.get(transactionDetails.size()-1).getBlockTime())) {
+                        transactionDetails.remove(transactionDetails.size()-1);
+                    }
+                }
             }
         }
+        transactionDetails.sort((t1, t2) -> t1.getBlockTime().compareTo(t2.getBlockTime()));
+
+        nextAddresses.clear();
 
         for (TransactionDetail detail : transactionDetails) {
             valueAfterMarked = 0;
@@ -117,9 +124,19 @@ public class Tracker {
                         }
                     }
                 }
+                else {
+                    if (valueAfterMarked <= 0 && markedValue > 0) {
+                        markedValue -= output.getValue();
+                    } 
+                    else if (valueAfterMarked - output.getValue() < 0) {
+                        valueAfterMarked -= output.getValue();
+                        if (valueAfterMarked < 0) {
+                            markedValue -= valueAfterMarked;
+                        }
+                    }
+                }
             }
         }
-        
     }
 
     public void addToMarkedTransactions (MarkedAddress markedAddress) {
