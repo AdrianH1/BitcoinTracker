@@ -91,7 +91,7 @@ public class App extends Application{
 
                     Runnable task = () -> {
                         Tracker tracker = new Tracker();
-                        List<MarkedAddress> result = tracker.startTracking(addressField.getText(), Integer.parseInt(depthField.getText()));
+                        List<MarkedAddress> result = tracker.startSearch(addressField.getText(), Integer.parseInt(depthField.getText()));
                         for (MarkedAddress markedAddress : result) {
                             resultsArea.appendText("Suchtiefe: " + String.valueOf(markedAddress.getSearchDepth()) + "\n\t" + markedAddress.getMarkedAddress() + "\n");
                         }

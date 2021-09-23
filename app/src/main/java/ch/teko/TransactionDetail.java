@@ -7,6 +7,7 @@ public class TransactionDetail {
     private Address[] outputs;
     private Date blockTime;
     private long fee;
+    private String predecessor;
 
     public Address[] getInputs() {
         return inputs;
@@ -30,5 +31,13 @@ public class TransactionDetail {
 
     public void setFee(long fee) {
         this.fee = fee;
+    }
+
+    public String getPredecessor() {
+        return predecessor;
+    }
+
+    public void setPredecessor(String predecessor) {
+        this.predecessor = predecessor;
     }
 }
