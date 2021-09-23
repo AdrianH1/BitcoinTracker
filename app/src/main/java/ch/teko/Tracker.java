@@ -54,9 +54,6 @@ public class Tracker {
             transactions = request.doAddressCall(wallet.getAddress());
             for (Address transaction : transactions) {
                 if (transaction.getSpentTxid() != null && !transaction.getSpentTxid().isEmpty()){
-                    if () {
-                        
-                    }
                     //Add transaction adresses to ToDoAdresses List
                     toDoAddresses.add(new ToDoAddress(wallet.getAddress(), transaction.getSpentTxid(), transaction.getValue(), null));
                 }
