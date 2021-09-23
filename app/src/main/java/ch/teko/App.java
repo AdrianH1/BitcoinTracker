@@ -41,7 +41,7 @@ public class App extends Application{
         addressHBox.setSpacing(10);
         Label addressLabel = new Label("Wallet Adresse:");
         addressLabel.setPrefWidth(100);
-        TextField addressField = new TextField();
+        TextField addressField = new TextField("bc1q44fptqxn6mw0jgp0gh8lm42hs4mxdv8zrh96qq");
         addressField.setPrefWidth(500);
         addressHBox.getChildren().addAll(addressLabel, addressField);
 
@@ -50,7 +50,7 @@ public class App extends Application{
         depthHBox.setSpacing(10);
         Label depthLabel = new Label("Suchtiefe:");
         depthLabel.setPrefWidth(100);
-        TextField depthField = new TextField();
+        TextField depthField = new TextField("1");
         depthField.setPrefWidth(50);
         Button runButton = new Button("Los!");
         Label errorLabel = new Label();
