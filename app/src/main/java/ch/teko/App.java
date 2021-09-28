@@ -33,30 +33,42 @@ public class App extends Application{
 
     @Override
     public void start(Stage primaryStage) {
+        //Title and Main VBox
         primaryStage.setTitle("Bitcoin Tracker");
         VBox vBox = new VBox();
         vBox.setPadding(new Insets(15, 12, 15, 12));
+
+        //Label and Field for start Wallet Address
         HBox addressHBox = new HBox();
         addressHBox.setPadding(new Insets(15, 0, 15, 0));
         addressHBox.setSpacing(10);
+
         Label addressLabel = new Label("Wallet Adresse:");
         addressLabel.setPrefWidth(100);
-        TextField addressField = new TextField("bc1q44fptqxn6mw0jgp0gh8lm42hs4mxdv8zrh96qq");
+
+        TextField addressField = new TextField("");
         addressField.setPrefWidth(500);
         addressHBox.getChildren().addAll(addressLabel, addressField);
 
+        //SearchDepth, Button, Loader and Error Label
         HBox depthHBox = new HBox();
         depthHBox.setPadding(new Insets(15, 0, 15, 0));
         depthHBox.setSpacing(10);
+
         Label depthLabel = new Label("Suchtiefe:");
         depthLabel.setPrefWidth(100);
-        TextField depthField = new TextField("1");
+
+        TextField depthField = new TextField("");
         depthField.setPrefWidth(50);
+
         Button runButton = new Button("Los!");
+
+        //Error Label if User Input for Search Depth is invalid
         Label errorLabel = new Label();
         errorLabel.setTextFill(Color.RED);       
 
-        File file =new File("D:/Daten/Teko HF/Programmieren2_Repo/BitcoinTracker/app/src/main/java/ch/teko/ajax-loader.gif");
+        //Loader Gif during thread execution
+        File file =new File("./src/main/java/ch/teko/ajax-loader.gif");
         String localUrl =null;
         try {
             localUrl = file.toURI().toURL().toString();
@@ -64,17 +76,19 @@ public class App extends Application{
         }catch (Exception e) {
             e.printStackTrace();
         }
-        Image image =new Image(localUrl,20,20,false,true);
+        Image image =new Image(localUrl,30,30,false,true);
         ImageView imageView =new ImageView(image);
         imageView.setVisible(false);
         
         depthHBox.getChildren().addAll(depthLabel, depthField, runButton, imageView, errorLabel);
 
+        //Text Area to show results
         TextArea resultsArea = new TextArea();
         resultsArea.setEditable(false);
         resultsArea.setPrefHeight(1000);
         vBox.getChildren().addAll(addressHBox, depthHBox, resultsArea);
 
+        //Set Scene and show stage
         Scene scene = new Scene(vBox, 900, 500);
 
         primaryStage.setScene(scene);
@@ -89,11 +103,19 @@ public class App extends Application{
                     scene.setCursor(Cursor.WAIT);
                     imageView.setVisible(true);
 
+                    //Run tracking in a separate Thread
                     Runnable task = () -> {
                         Tracker tracker = new Tracker();
                         List<MarkedAddress> result = tracker.startSearch(addressField.getText(), Integer.parseInt(depthField.getText()));
+                        int tmpSearchDepth = 0;
+                        resultsArea.clear();
                         for (MarkedAddress markedAddress : result) {
-                            resultsArea.appendText("Suchtiefe: " + String.valueOf(markedAddress.getSearchDepth()) + "\n\t" + markedAddress.getMarkedAddress() + "\n");
+                            if (tmpSearchDepth == 0 || tmpSearchDepth != markedAddress.getSearchDepth()){
+                                resultsArea.appendText("Suchtiefe: " + String.valueOf(markedAddress.getSearchDepth()) + "\n\t" + markedAddress.getMarkedAddress() + "\n");
+                            } else {
+                                resultsArea.appendText("\t" + markedAddress.getMarkedAddress() + "\n");
+                            }
+                            tmpSearchDepth = markedAddress.getSearchDepth();
                         }
                         scene.setCursor(Cursor.DEFAULT);
                         imageView.setVisible(false);
@@ -101,12 +123,12 @@ public class App extends Application{
 
                     ExecutorService executor = Executors.newFixedThreadPool(1);
                     try {
-                        // Runnable Task dem Executorservice zuweisen
+                        //Submit Runnable Task to Executorservice
                         executor.submit(task);
                     } catch (Exception e) {
-                        //TODO: handle exception
+                        System.out.println(e.getMessage());
                     }
-                    // Executorservice beenden, damit die Threads gekillt werden. 
+                    //Shutdown Executorservice to kill the Thread 
                     executor.shutdown();
                 }
                 else {
@@ -116,6 +138,11 @@ public class App extends Application{
             }
         });
     }
+    /**
+     * Checks Vality of user Input for Search  Depth
+     * @param depth search Depth
+     * @return true if depth is a number
+     */
     public boolean checkDepthValidity(String depth){
         try {
             int depthValue = Integer.parseInt(depth);

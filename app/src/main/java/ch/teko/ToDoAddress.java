@@ -3,27 +3,27 @@ package ch.teko;
 import java.util.Date;
 
 public class ToDoAddress {
-    private String address;
+    private String parentAddress;
     private String transactionId;
     private long value;
     private Date blockTime;
 
 
-    public ToDoAddress(String address, String transactionId, long value, Date blockTime) {
-        this.address = address;
+    public ToDoAddress(String parentAddress, String transactionId, long value, Date blockTime) {
+        this.parentAddress = parentAddress;
         this.value = value;
         this.blockTime = blockTime;
         this.transactionId = transactionId;
     }
 
-    public ToDoAddress(String address, long value, Date blockTime){
-        this.address = address;
+    public ToDoAddress(String parentAddress, long value, Date blockTime){
+        this.parentAddress = parentAddress;
         this.value = value;
         this.blockTime = blockTime;
     }
 
-    public ToDoAddress(String address){
-        this.address = address;
+    public ToDoAddress(String parentAddress){
+        this.parentAddress = parentAddress;
     }
 
     public String getTransactionId() {
@@ -34,12 +34,12 @@ public class ToDoAddress {
         this.transactionId = transactionId;
     }
 
-    public String getAddress() {
-        return address;
+    public String getParentAddress() {
+        return parentAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setParentAddress(String parentAddress) {
+        this.parentAddress = parentAddress;
     }
 
     public long getValue() {
